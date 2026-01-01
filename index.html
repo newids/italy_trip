@@ -320,6 +320,33 @@
             font-weight: 500;
         }
 
+        .hotel-info {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .hotel-info h4 {
+            color: #d32f2f;
+            margin-bottom: 8px;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hotel-info a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .hotel-info a:hover {
+            text-decoration: underline;
+        }
+
         .highlight {
             background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%);
             padding: 20px;
@@ -481,6 +508,11 @@
                 </ul>
                 <div class="transport">🚆 <span data-lang="transport">교통편:</span> Leonardo Express</div>
             </div>
+            <div class="hotel-info">
+                <h4>🏨 <span data-lang="hotel">숙소</span></h4>
+                <p><a href="https://www.myrealtrip.com/reservations/detail/ACM-20251231-00001771" target="_blank" rel="noopener">봉구네 민박</a> (3/25 - 3/28)</p>
+                <p style="font-size: 0.9em; color: #666; margin-top: 5px;" data-lang="hotel-rome">로마 중심부, 4박</p>
+            </div>
         </div>
 
         <!-- Day 2 -->
@@ -585,6 +617,11 @@
                 </ul>
                 <div class="transport">⛴ <span data-lang="ferry">페리</span> | 🚄 <span data-lang="high-speed">고속열차</span></div>
             </div>
+            <div class="hotel-info">
+                <h4>🏨 <span data-lang="hotel">숙소</span></h4>
+                <p><a href="https://www.myrealtrip.com/reservations/detail/ACM-20251231-00001869" target="_blank" rel="noopener">La Casa Bella (라까사 벨라)</a> (3/29 - 3/31)</p>
+                <p style="font-size: 0.9em; color: #666; margin-top: 5px;" data-lang="hotel-florence">피렌체, 2박</p>
+            </div>
         </div>
 
         <!-- Day 6 -->
@@ -658,6 +695,11 @@
                     <li data-lang="day8-7">이탈리아에서의 마지막 저녁식사</li>
                 </ul>
                 <div class="transport">🚄 <span data-lang="transport">교통편:</span> <span data-lang="high-speed">고속열차</span></div>
+            </div>
+            <div class="hotel-info">
+                <h4>🏨 <span data-lang="hotel">숙소</span></h4>
+                <p><a href="https://www.myrealtrip.com/reservations/detail/ACM-20251231-00001990" target="_blank" rel="noopener">B&B Hotel Milano Aosta (B&B 호텔 밀라노 아오스타)</a> (3/31 - 4/1)</p>
+                <p style="font-size: 0.9em; color: #666; margin-top: 5px;" data-lang="hotel-milan">밀라노, 1박</p>
             </div>
         </div>
 
@@ -814,7 +856,11 @@
                 shuttle: "셔틀",
                 remember: "기억하세요",
                 "day9-tip": "비행기 탑승 전 마지막으로 이탈리아 에스프레소를 음미하세요. La dolce vita는 당신의 귀환을 기다릴 것입니다!",
-                footer1: "잊을 수 없는 이탈리아 모험을 기원합니다!"
+                footer1: "잊을 수 없는 이탈리아 모험을 기원합니다!",
+                hotel: "숙소",
+                "hotel-rome": "로마 중심부, 4박",
+                "hotel-florence": "피렌체, 2박",
+                "hotel-milan": "밀라노, 1박"
             },
             en: {
                 "menu-label": "Itinerary",
@@ -936,7 +982,11 @@
                 shuttle: "Shuttle",
                 remember: "Remember",
                 "day9-tip": "Take one last moment to savor an Italian espresso before your flight. La dolce vita will be waiting for your return!",
-                footer1: "Wishing you an unforgettable Italian adventure!"
+                footer1: "Wishing you an unforgettable Italian adventure!",
+                hotel: "Accommodation",
+                "hotel-rome": "Rome city center, 4 nights",
+                "hotel-florence": "Florence, 2 nights",
+                "hotel-milan": "Milan, 1 night"
             },
             it: {
                 "menu-label": "Itinerario",
@@ -1058,7 +1108,11 @@
                 shuttle: "Navetta",
                 remember: "Ricorda",
                 "day9-tip": "Prenditi un ultimo momento per assaporare un espresso italiano prima del volo. La dolce vita ti aspetterà per il tuo ritorno!",
-                footer1: "Ti auguriamo un'avventura italiana indimenticabile!"
+                footer1: "Ti auguriamo un'avventura italiana indimenticabile!",
+                hotel: "Alloggio",
+                "hotel-rome": "Centro di Roma, 4 notti",
+                "hotel-florence": "Firenze, 2 notti",
+                "hotel-milan": "Milano, 1 notte"
             }
         };
 
