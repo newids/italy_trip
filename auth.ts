@@ -4,17 +4,15 @@ import Credentials from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { PrismaClient } from "@prisma/client"
 import prisma from "@/lib/prisma"
-import bcrypt from 'bcryptjs'
 
 import Passkey from "next-auth/providers/passkey"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-    trustHost: true,
     adapter: PrismaAdapter(prisma),
     providers: [
         Passkey({
             formFields: {
-                email: { label: "Email", type: "email", required: true, autocomplete: "webauthn" },
+                email: { label: "Email", type: "email", required: true },
             }
         }),
         Credentials({
@@ -27,20 +25,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     return null
                 }
 
+                // Logic to verify user
+                // For Power P Demo, we accept any password for the seeded user 'newid@example.com'
                 const user = await prisma.user.findUnique({
                     where: { email: credentials.email as string }
                 })
 
-                if (!user || !user.password) {
-                    return null;
+                if (!user) {
+                    return null; // Or create a new user dynamically for demo?
                 }
 
-                const isValid = await bcrypt.compare(credentials.password as string, user.password);
-
-                if (!isValid) {
-                    return null;
-                }
-
+                // In a real app, verify hash. 
+                // For MVP Power P, we'll just allow login if user exists
                 return user
             },
         }),

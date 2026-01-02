@@ -4,16 +4,13 @@ import { useTranslations } from 'next-intl'
 import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 import { auth } from "@/auth"
-import prisma from "@/lib/prisma"
 
 export default async function LoginPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     const session = await auth()
     if (session?.user) {
-        redirect(`/${locale}`)
+        redirect(`/ ${locale} `)
     }
-
-    const userCount = await prisma.user.count();
 
     // Server Action for credential login
     async function credentialLogin(formData: FormData) {
@@ -25,7 +22,7 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
         await signIn("credentials", {
             email,
             password,
-            redirectTo: `/${locale}`
+            redirectTo: `/ ${locale} `
         })
     }
 
@@ -35,14 +32,6 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
                 <div className="text-center">
                     <h1 className="text-3xl font-bold text-[#764ba2] mb-2">Trip Planner</h1>
                     <p className="text-gray-500 text-sm">Sign in to start planning</p>
-                    {userCount === 0 && (
-                        <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                            <p className="text-sm text-blue-700 mb-2">No users found.</p>
-                            <a href={`/${locale}/signup`} className="text-blue-600 font-bold hover:underline">
-                                Setup Owner Account &rarr;
-                            </a>
-                        </div>
-                    )}
                 </div>
 
                 <form action={credentialLogin} className="space-y-4">
@@ -71,9 +60,6 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
                 <button className="w-full bg-white text-gray-700 border border-gray-200 font-bold py-3 rounded-xl hover:bg-gray-50 transition flex items-center justify-center gap-2">
                     <span>🔑</span> Passkey / Biometric
                 </button>
-                <p className="text-xs text-center text-gray-400 mt-4">
-                    Password changes are only available via Biometric/Passkey login.
-                </p>
             </div>
         </div>
     )

@@ -24,9 +24,7 @@ export default auth((req) => {
     // Real auth logic:
     // if (isDashboard && !isLoggedIn) return NextResponse.redirect(new URL('/en/login', req.url))
 
-    const response = intlMiddleware(req)
-    response.headers.set('x-pathname', pathname)
-    return response
+    return intlMiddleware(req)
 })
 
 export const config = {
