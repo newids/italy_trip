@@ -1,0 +1,44 @@
+{
+  "name": "app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "seed": "npx ts-node -O '{\"module\":\"commonjs\",\"esModuleInterop\":true}' scripts/seed.ts",
+    "backup": "npx ts-node -O '{\"module\":\"commonjs\",\"esModuleInterop\":true}' scripts/backup.ts",
+    "cloud-backup": "npx ts-node -O '{\"module\":\"commonjs\",\"esModuleInterop\":true}' scripts/cloud-backup.ts",
+    "cloud-restore": "npx ts-node -O '{\"module\":\"commonjs\",\"esModuleInterop\":true}' scripts/cloud-restore.ts"
+  },
+  "dependencies": {
+    "@auth/prisma-adapter": "^2.11.1",
+    "@simplewebauthn/browser": "^9.0.1",
+    "@simplewebauthn/server": "^9.0.3",
+    "date-fns": "^4.1.0",
+    "next": "16.1.1",
+    "next-auth": "^5.0.0-beta.30",
+    "next-intl": "^4.7.0",
+    "next-themes": "^0.4.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-s3": "^3.958.0",
+    "@prisma/client": "^5.22.0",
+    "@tailwindcss/postcss": "^4",
+    "@types/cheerio": "^0.22.35",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "cheerio": "^1.1.2",
+    "dotenv": "^17.2.3",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.1",
+    "prisma": "^5.22.0",
+    "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5"
+  }
+}
