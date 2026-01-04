@@ -14,7 +14,7 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
   if (!session?.user) {
     // If not logged in, show landing or redirect
     // For now, redirect to login
-    redirect('/api/auth/signin') // Or custom login page
+    redirect(`/${locale}/login`)
   }
 
   const trips = await prisma.trip.findMany({
@@ -27,7 +27,10 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
       <header className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-800">{t('myTrips')}</h1>
         <div className="flex gap-4">
-          <span className="text-sm text-gray-600 self-center">{session.user.email}</span>
+          <span className="text-sm text-gray-600 self-center hidden md:inline">{session.user.email}</span>
+          <Link href={`/${locale}/settings`} className="bg-gray-100 text-gray-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition">
+            Settings
+          </Link>
           <Link href="/api/auth/signout" className="bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-200 transition">
             {t('signOut')}
           </Link>

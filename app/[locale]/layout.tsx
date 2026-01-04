@@ -22,10 +22,10 @@ export default async function LocaleLayout({
   const pathname = headerList.get('x-pathname') || '';
 
   // Prevent infinite redirect loop
-  if (!pathname.includes('/signup')) {
+  if (!pathname.includes('/login')) {
     const userCount = await prisma.user.count();
     if (userCount === 0) {
-      redirect(`/${locale}/signup`);
+      redirect(`/${locale}/login`);
     }
   }
 
