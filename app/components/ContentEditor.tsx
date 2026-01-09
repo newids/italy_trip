@@ -4,8 +4,8 @@
 import { useState } from 'react'
 import { addLink, addImage, removeLink, removeImage } from '@/app/actions/content'
 
-export default function ContentEditor({ activity }: { activity: any }) {
-    const [isOpen, setIsOpen] = useState(false)
+export default function ContentEditor({ activity, forceOpen = false }: { activity: any, forceOpen?: boolean }) {
+    const [isOpen, setIsOpen] = useState(forceOpen)
     const [newLink, setNewLink] = useState('')
     const [newLabel, setNewLabel] = useState('')
     const [newImage, setNewImage] = useState('')
@@ -13,7 +13,7 @@ export default function ContentEditor({ activity }: { activity: any }) {
     const links = activity.links ? JSON.parse(activity.links) : []
     const images = activity.images ? JSON.parse(activity.images) : []
 
-    if (!isOpen) {
+    if (!isOpen && !forceOpen) {
         return (
             <button onClick={() => setIsOpen(true)} className="text-xs text-indigo-500 hover:text-indigo-700 underline mt-2">
                 Manage Content

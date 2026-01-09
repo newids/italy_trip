@@ -4,6 +4,7 @@
 import prisma from "@/lib/prisma"
 import bcrypt from 'bcryptjs'
 import { signIn } from "@/auth"
+import { seedDefaultTrip } from "@/lib/seed-utils"
 
 export async function getOwnerStatus() {
     const userCount = await prisma.user.count()
@@ -45,13 +46,17 @@ export async function createOwner(prevState: any, formData: FormData) {
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10)
-        await prisma.user.create({
+        const user = await prisma.user.create({
             data: {
                 email,
                 name,
                 password: hashedPassword
             }
         })
+
+        // Seed default trip
+        await seedDefaultTrip(user.id)
+
     } catch (e) {
         return { error: "Failed to create user." }
     }

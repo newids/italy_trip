@@ -88,6 +88,7 @@ model Trip {
   description String?
   isPublic    Boolean   @default(false)
   features    String?   // JSON string for random features/tags
+  icon        String?   // Emoji icon for the trip
   
   days        Day[]
   bookings    Booking[]

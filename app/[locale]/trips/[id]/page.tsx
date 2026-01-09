@@ -1,3 +1,8 @@
+import ExportTripButton from '@/components/ExportTripButton'
+import BackButton from '@/components/BackButton'
+import TripOverview from '@/components/TripOverview'
+import BookingListEditor from '@/components/BookingListEditor'
+import TripHeaderEditor from '@/components/TripHeaderEditor'
 
 import prisma from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
@@ -37,109 +42,96 @@ export default async function TripDetail({ params }: { params: Promise<{ id: str
 
 
     return (
-        <main className="min-h-screen pb-20 bg-gradient-to-br from-[#ffecd2] to-[#fcb69f]">
+        <main className="min-h-screen pb-20 bg-gray-50">
             {/* Header */}
-            <header className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white pt-12 pb-16 px-6 rounded-b-3xl shadow-lg mb-6 relative">
-                <Link href={`/${locale}`} className="absolute top-6 left-6 text-white text-xl opacity-80 hover:opacity-100">
-                    ← Dashboard
-                </Link>
-                <div className="max-w-4xl mx-auto text-center">
-                    <h1 className="text-4xl font-bold mb-2 drop-shadow-md">
-                        🇮🇹 {trip.title}
-                    </h1>
-                    <p className="text-lg opacity-90">{trip.subtitle}</p>
-                    <p className="text-sm mt-4 opacity-75">
-                        {format(new Date(trip.startDate), 'yyyy.MM.dd')} - {format(new Date(trip.endDate), 'MM.dd')}
-                    </p>
+            <header className="bg-white border-b border-gray-200 pt-12 pb-12 px-6 mb-8 relative">
+                <div className="absolute top-6 left-6 flex gap-4">
+                    <Link href="/" className="btn-secondary px-3 py-1.5 text-xs text-gray-600 inline-flex items-center gap-1">
+                        <span>←</span> Dashboard
+                    </Link>
+                </div>
+
+                <TripHeaderEditor trip={trip} />
+
+                <div className="flex items-center justify-center gap-3 mt-4 text-sm text-gray-500">
+                    <ExportTripButton tripId={trip.id} title={trip.title} />
                 </div>
             </header>
 
-            <div className="container mx-auto px-4 max-w-4xl space-y-8">
+            <div className="container mx-auto px-4 max-w-4xl space-y-12">
 
                 {/* Slide View */}
                 <section>
-                    <h2 className="text-xl font-bold text-[#764ba2] px-2 mb-4">Highlights Reel</h2>
+                    <div className="flex items-center gap-2 mb-6 px-2">
+                        <h2 className="text-xl font-bold text-gray-900">Highlights</h2>
+                        <span className="h-px flex-1 bg-gray-200"></span>
+                    </div>
                     <SlideView days={trip.days} locale={locale} />
                 </section>
 
                 {/* Overview */}
-                <section className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-sm border-l-4 border-[#764ba2]">
-                    <h2 className="text-xl font-bold text-[#667eea] mb-4 border-b-2 border-purple-100 pb-2">
-                        Trip Overview
+                <section className="card p-8">
+                    <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        📝 Overview
                     </h2>
-                    <p className="text-gray-700 leading-relaxed mb-6">
-                        {trip.description}
-                    </p>
+                    <TripOverview tripId={trip.id} initialDescription={trip.description || ''} />
 
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {trip.bookings.map((booking: Prisma.BookingGetPayload<any>) => (
-                            <div key={booking.id} className="bg-gradient-to-br from-indigo-50 to-purple-50 p-4 rounded-xl border border-indigo-100 shadow-sm relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-16 h-16 bg-white/20 rounded-bl-full -mr-8 -mt-8"></div>
-                                <h3 className="font-bold text-[#764ba2] flex items-center gap-2 mb-2">
-                                    {booking.type === 'FLIGHT' ? '✈' : booking.type === 'TRAIN' ? '🚄' : '🎫'} {booking.title}
-                                </h3>
-                                <div className="text-sm text-gray-600 whitespace-pre-line">
-                                    {booking.details}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                    <BookingListEditor tripId={trip.id} bookings={trip.bookings} />
                 </section>
 
                 {/* Days List */}
-                <section className="space-y-4">
-                    <h2 className="text-xl font-bold text-[#764ba2] px-2">Itinerary</h2>
+                <section className="space-y-6">
+                    <div className="flex items-center gap-2 mb-2 px-2">
+                        <h2 className="text-xl font-bold text-gray-900">Itinerary</h2>
+                        <span className="h-px flex-1 bg-gray-200"></span>
+                    </div>
+
                     {trip.days.map((day: any) => (
                         <Link href={`/${locale}/days/${day.id}`} key={day.id} className="block group">
-                            <div className="bg-white rounded-2xl p-6 shadow-md hover:shadow-lg transition-shadow border-l-4 border-[#667eea] relative active:scale-[0.99] duration-200">
+                            <div className="card p-6 border-l-4 border-l-gray-900 hover:border-l-indigo-600 transition-all">
                                 <div className="flex justify-between items-start mb-4">
                                     <div>
-                                        <span className="text-2xl font-bold text-[#667eea] blocked">
+                                        <span className="text-2xl font-bold text-gray-900 block">
                                             Day {day.dayNumber}
                                         </span>
-                                        <span className="text-sm text-gray-500 ml-2 font-medium">
+                                        <span className="text-sm text-gray-500 font-medium font-mono uppercase tracking-wide">
                                             {format(new Date(day.date), 'MM.dd (EEE)')}
                                         </span>
                                     </div>
                                     {day.city && (
-                                        <span className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                                        <span className="bg-gray-100 text-gray-700 text-xs font-bold px-3 py-1 rounded-full border border-gray-200">
                                             {day.city}
                                         </span>
                                     )}
                                 </div>
 
-                                <h3 className="text-lg font-bold text-gray-800 mb-3 ml-1">
+                                <h3 className="text-lg font-bold text-gray-800 mb-4 group-hover:text-indigo-600 transition-colors">
                                     {day.title}
                                 </h3>
 
-                                <ul className="space-y-2 mb-4">
-                                    {day.activities.slice(0, 3).map((act: any) => (
-                                        <li key={act.id} className="text-gray-600 text-sm flex items-start gap-2">
-                                            <span className="text-[#667eea] mt-0.5">•</span>
+                                <ul className="space-y-3 mb-4">
+                                    {day.activities.map((act: any) => (
+                                        <li key={act.id} className="text-gray-600 text-sm flex items-start gap-3">
+                                            <span className="text-gray-300 mt-0.5">•</span>
                                             <span className="line-clamp-1">{act.description}</span>
                                         </li>
                                     ))}
-                                    {day.activities.length > 3 && (
-                                        <li className="text-gray-400 text-xs pl-4 font-medium">
-                                            + {day.activities.length - 3} more activities...
-                                        </li>
-                                    )}
                                 </ul>
 
-                                <div className="mt-4 flex justify-between items-center">
-                                    {day.transport && (
-                                        <div className="text-xs bg-indigo-50 text-indigo-600 px-3 py-1 rounded-lg inline-block">
+                                <div className="mt-4 pt-4 border-t border-gray-100">
+                                    {day.transport ? (
+                                        <div className="text-xs text-gray-500 font-medium flex items-center gap-1">
                                             🚍 {day.transport}
                                         </div>
-                                    )}
+                                    ) : <div className="h-4"></div>}
                                 </div>
                             </div>
                         </Link>
                     ))}
                 </section>
 
-                <footer className="text-center text-gray-500 py-8 text-sm font-medium">
-                    <p>✨ Built with Next.js & Prisma ✨</p>
+                <footer className="text-center text-gray-400 py-12 text-sm font-medium">
+                    <p>TripTimeTable</p>
                 </footer>
             </div>
         </main>

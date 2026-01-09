@@ -1,7 +1,12 @@
 import prisma from '@/lib/prisma'
 import { format } from 'date-fns'
 import { auth } from "@/auth"
+import DayScheduleEditor from '@/components/DayScheduleEditor'
+import DayHeaderEditor from '@/components/DayHeaderEditor'
 import ContentEditor from "@/app/components/ContentEditor"
+import BackButton from '@/components/BackButton'
+import AccommodationCard from '@/components/AccommodationCard'
+import HighlightListEditor from '@/components/HighlightListEditor'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { DayWithDetails } from '@/types'
@@ -21,6 +26,20 @@ export default async function DayDetail({ params }: { params: Promise<{ id: stri
 
     const session = await auth()
 
+    // Get Prev/Next Day
+    const prevDay = await prisma.day.findFirst({
+        where: { tripId: day.trip.id, dayNumber: day.dayNumber - 1 },
+        select: { id: true }
+    })
+    const nextDay = await prisma.day.findFirst({
+        where: { tripId: day.trip.id, dayNumber: day.dayNumber + 1 },
+        select: { id: true }
+    })
+
+    // Vars for template
+    const prevDayId = prevDay?.id
+    const nextDayId = nextDay?.id
+
     if (!day) {
         notFound()
     }
@@ -28,102 +47,63 @@ export default async function DayDetail({ params }: { params: Promise<{ id: stri
     return (
         <div className="min-h-screen bg-[#fff5f5]">
             {/* Header */}
-            <div className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white p-6 pb-12 rounded-b-3xl relative">
-                <Link href={`/${locale}/trips/${day.trip.id}`} className="absolute top-6 left-6 text-white text-2xl opacity-80 hover:opacity-100">
-                    ←
-                </Link>
-                <div className="text-center mt-4">
-                    <div className="text-sm font-medium opacity-80 uppercase tracking-widest mb-1">Day {day.dayNumber}</div>
-                    <h1 className="text-3xl font-bold">{day.title}</h1>
-                    <p className="opacity-90 mt-2">{format(new Date(day.date), 'yyyy.MM.dd EEEE')}</p>
+            <div className="bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white p-4 pb-8 rounded-b-2xl relative shadow-lg">
+                <div className="flex justify-between items-start">
+                    <div className="bg-white/20 hover:bg-white/30 rounded-lg backdrop-blur-sm p-1 transition-colors">
+                        <Link href={`/${locale}/trips/${day.trip.id}`} className="text-white text-xs font-bold px-2 py-1 flex items-center gap-1">
+                            ← Trip
+                        </Link>
+                    </div>
+                </div>
+
+                {/* Day Editor Component (Title, Date, City, Transport) */}
+                <div className="mt-2 mb-4">
+                    <DayHeaderEditor day={day} locale={locale} prevDayId={prevDayId} nextDayId={nextDayId} />
                 </div>
             </div>
 
-            <div className="container mx-auto px-4 -mt-6 max-w-2xl space-y-6 pb-20">
+            <div className="container mx-auto px-4 -mt-4 max-w-2xl space-y-6 pb-20 relative z-10">
 
-                {/* City & Transport */}
-                <div className="bg-white rounded-xl shadow-lg p-4 flex flex-col items-center text-center gap-2">
-                    {day.city && (
-                        <span className="bg-indigo-100 text-indigo-700 font-bold px-4 py-1 rounded-full text-sm">
-                            📍 {day.city}
-                        </span>
-                    )}
-                    {day.transport && (
-                        <div className="text-gray-600 text-sm">
-                            🚆 {day.transport}
-                        </div>
-                    )}
-                </div>
+                {/* City & Transport (Moved into Header Editor mostly, but if user wants visual cards here... keeping logic but maybe hidden? 
+                   Actually, user said "make all components in days editable". 
+                   The DayHeaderEditor handles Title, Date, City, Transport. 
+                   So we can probably REMOVE this duplicate display or update it to read from the edited data.
+                   But DayHeaderEditor is client side. This page is server side. 
+                   Ideally we show the same data. 
+                   Let's Remove the separate City/Transport card since it's now in the header editor.
+                */}
 
-                {/* Activities */}
+                {/* Activities Editor */}
                 <div className="bg-white rounded-xl shadow-sm p-6">
-                    <h2 className="text-lg font-bold text-[#764ba2] mb-4 flex items-center gap-2">
+                    <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
                         <span>📝</span> Schedule
                     </h2>
-                    <ul className="space-y-4">
-                        {day.activities.map((act: any) => (
-                            <li key={act.id} className="text-gray-600 text-sm">
-                                <div className="flex items-start gap-2">
-                                    <span className="text-[#667eea] mt-0.5">•</span>
-                                    <span>{act.description}</span>
-                                </div>
-                                {session?.user && (
-                                    <ContentEditor activity={act} />
-                                )}
 
-                                {/* Display Links/Images if not in editor (or always) */}
-                                {act.links && (
-                                    <div className="flex gap-2 mt-1 ml-4 flex-wrap">
-                                        {JSON.parse(act.links as string).map((l: any, i: number) => (
-                                            <a key={i} href={l.url} target="_blank" className="text-xs text-blue-500 bg-blue-50 px-2 py-0.5 rounded hover:underline">
-                                                🔗 {l.label || 'Link'}
-                                            </a>
-                                        ))}
+                    {session?.user ? (
+                        <DayScheduleEditor dayId={day.id} activities={day.activities} />
+                    ) : (
+                        // Read-only View for non-users (or if needed separate component)
+                        <ul className="space-y-4">
+                            {day.activities.map((act: any) => (
+                                <li key={act.id} className="text-gray-600 text-sm flex items-start gap-2">
+                                    <span className="mt-0.5 select-none text-xl w-8 text-center">
+                                        {act.type === 'MEAL' ? '🍴' : act.type === 'TRANSPORT' ? '🚆' : act.type === 'HOTEL' ? '🏨' : '📷'}
+                                    </span>
+                                    <div>
+                                        <p>{act.description}</p>
+                                        {act.time && <span className="text-xs text-gray-400">{act.time}</span>}
                                     </div>
-                                )}
-                                {act.images && (
-                                    <div className="flex gap-2 mt-1 ml-4 overflow-x-auto">
-                                        {JSON.parse(act.images as string).map((img: string, i: number) => (
-                                            <img key={i} src={img} className="w-16 h-16 object-cover rounded shadow-sm" />
-                                        ))}
-                                    </div>
-                                )}
-                            </li>
-                        ))}
-                    </ul>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </div>
 
                 {/* Highlights/Tips */}
-                {day.highlights.map((highlight) => (
-                    <div key={highlight.id} className={`rounded-xl p-6 border-l-4 shadow-sm ${highlight.type === 'TIP' ? 'bg-yellow-50 border-yellow-400' : 'bg-pink-50 border-pink-400'}`}>
-                        <h3 className={`font-bold mb-2 flex items-center gap-2 ${highlight.type === 'TIP' ? 'text-yellow-700' : 'text-pink-700'}`}>
-                            {highlight.type === 'TIP' ? '💡 Tip' : '🌟 Highlight'}
-                        </h3>
-                        <p className="text-gray-700 text-sm">
-                            {highlight.content}
-                        </p>
-                    </div>
-                ))}
+                <HighlightListEditor dayId={day.id} highlights={day.highlights} />
 
                 {/* Accommodation */}
-                {day.accommodation && (
-                    <div className="bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl p-6 border border-slate-200 shadow-sm">
-                        <h3 className="font-bold text-slate-700 mb-2 flex items-center gap-2">
-                            🏨 Accommodation
-                        </h3>
-                        <div className="text-lg font-semibold text-slate-800">
-                            {day.accommodation.name}
-                        </div>
-                        {day.accommodation.link && (
-                            <a href={day.accommodation.link} target="_blank" rel="noopener noreferrer" className="text-indigo-600 text-sm hover:underline block mt-1">
-                                View Reservation →
-                            </a>
-                        )}
-                        {day.accommodation.note && (
-                            <p className="text-slate-500 text-xs mt-2">{day.accommodation.note}</p>
-                        )}
-                    </div>
-                )}
+                <AccommodationCard dayId={day.id} initialData={day.accommodation} />
 
             </div>
         </div>
