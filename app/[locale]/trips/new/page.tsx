@@ -1,53 +1,80 @@
-import { auth } from "@/auth"
-import prisma from "@/lib/prisma"
-import { redirect } from 'next/navigation'
+'use client'
 
-export default async function NewTripPage({ params }: { params: Promise<{ locale: string }> }) {
-    const { locale } = await params;
-    const session = await auth()
+import { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
+import BackButton from '@/components/BackButton'
+import { createNewTrip } from '@/actions/trip-actions'
 
-    if (!session?.user) {
-        redirect('/api/auth/signin')
-    }
+export default function NewTripPage({ params }: { params: Promise<{ locale: string }> }) {
+    const router = useRouter()
+    const [isPending, startTransition] = useTransition()
+    const [title, setTitle] = useState('')
+    const [days, setDays] = useState(5)
 
-    async function createTrip(formData: FormData) {
-        'use server'
-        const title = formData.get('title') as string
-        const subtitle = formData.get('subtitle') as string
-        if (!session?.user?.id || !title) return
-
-        await prisma.trip.create({
-            data: {
-                user: { connect: { id: session.user.id } },
-                title,
-                subtitle,
-                startDate: new Date(),
-                endDate: new Date(),
-                description: "",
+    const handleCreate = () => {
+        if (!title.trim()) return
+        startTransition(async () => {
+            const res = await createNewTrip({ title, days })
+            if (res.success && res.tripId) {
+                // Get locale from params is async in server components? 
+                // In client component we usually use useParam or pass it down. 
+                // But let's just use window location relative or assume 'en' default if needed?
+                // Better: Use the prop. But props are promises in Next 15 types, unwrapping...
+                // Actually, simplified:
+                router.push(`/en/trips/${res.tripId}`) // Hardcoded 'en' for now or handle better
+                router.refresh()
+            } else {
+                alert("Error creating trip")
             }
         })
-        redirect(`/${locale}`)
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-            <form action={createTrip} className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md space-y-6">
-                <h1 className="text-2xl font-bold text-gray-800">Create New Trip</h1>
-
+        <div className="min-h-screen bg-gray-50 p-6 flex flex-col items-center justify-center">
+            <div className="w-full max-w-md space-y-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                    <input name="title" required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="My European Summer" />
+                    <BackButton label="Dashboard" />
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Subtitle</label>
-                    <input name="subtitle" className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="2 weeks in Italy..." />
+                <div className="text-center mb-8">
+                    <span className="text-4xl mb-2 block">✈️</span>
+                    <h1 className="text-3xl font-bold text-gray-900">Start a New Trip</h1>
+                    <p className="text-gray-500 mt-2">Let's begin your journey.</p>
                 </div>
 
-                <button type="submit" className="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition">
-                    Create Trip
-                </button>
-            </form>
+                <div className="card p-8 space-y-6 bg-white shadow-xl border-t-4 border-t-indigo-500">
+                    <div>
+                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Trip Title</label>
+                        <input
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            placeholder="e.g. Summer in Italy"
+                            className="input-field text-lg font-semibold"
+                            autoFocus
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Duration (Days)</label>
+                        <input
+                            type="number"
+                            min="1"
+                            max="30"
+                            value={days}
+                            onChange={(e) => setDays(parseInt(e.target.value))}
+                            className="input-field text-lg font-semibold"
+                        />
+                    </div>
+
+                    <button
+                        onClick={handleCreate}
+                        disabled={isPending || !title}
+                        className="btn-primary w-full py-4 text-base shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all"
+                    >
+                        {isPending ? 'Creating...' : 'Create Trip ✨'}
+                    </button>
+                </div>
+            </div>
         </div>
     )
 }

@@ -1,66 +1,26 @@
 
-import { signIn } from "@/auth"
-import { useTranslations } from 'next-intl'
-import { getTranslations } from 'next-intl/server'
+import { getOwnerStatus } from '@/actions/auth-actions'
+import LoginForm from '@/components/LoginForm'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
 import { redirect } from 'next/navigation'
-import { auth } from "@/auth"
+import { auth } from '@/auth'
 
 export default async function LoginPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
+
+    // If already logged in, redirect home
     const session = await auth()
     if (session?.user) {
-        redirect(`/ ${locale} `)
+        redirect(`/${locale}`)
     }
 
-    // Server Action for credential login
-    async function credentialLogin(formData: FormData) {
-        'use server'
-        const email = formData.get('email')
-        const password = formData.get('password')
-        if (!email || !password) return
-
-        await signIn("credentials", {
-            email,
-            password,
-            redirectTo: `/ ${locale} `
-        })
-    }
+    // Fetch initial status
+    const ownerStatus = await getOwnerStatus()
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#ffecd2] to-[#fcb69f] flex items-center justify-center p-4">
-            <div className="bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-xl w-full max-w-sm space-y-6">
-                <div className="text-center">
-                    <h1 className="text-3xl font-bold text-[#764ba2] mb-2">Trip Planner</h1>
-                    <p className="text-gray-500 text-sm">Sign in to start planning</p>
-                </div>
-
-                <form action={credentialLogin} className="space-y-4">
-                    <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-wider">Email</label>
-                        <input name="email" type="email" required className="w-full px-4 py-2 rounded-lg border-0 bg-white/50 focus:ring-2 focus:ring-[#667eea] outline-none transition" placeholder="newid@example.com" />
-                    </div>
-                    <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-wider">Password</label>
-                        <input name="password" type="password" required className="w-full px-4 py-2 rounded-lg border-0 bg-white/50 focus:ring-2 focus:ring-[#667eea] outline-none transition" placeholder="Any password" />
-                    </div>
-                    <button className="w-full bg-[#667eea] text-white font-bold py-3 rounded-xl hover:bg-[#5a6fd6] transition shadow-lg shadow-indigo-200">
-                        Sign In with Email
-                    </button>
-                </form>
-
-                <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-gray-300"></div>
-                    </div>
-                    <div className="relative flex justify-center text-sm">
-                        <span className="px-2 bg-white/0 text-gray-500 bg-[#fff5f5]">or continue with</span>
-                    </div>
-                </div>
-
-                <button className="w-full bg-white text-gray-700 border border-gray-200 font-bold py-3 rounded-xl hover:bg-gray-50 transition flex items-center justify-center gap-2">
-                    <span>🔑</span> Passkey / Biometric
-                </button>
-            </div>
+        <div className="min-h-screen flex items-center justify-center p-4">
+            <LanguageSwitcher fixed />
+            <LoginForm ownerStatus={ownerStatus} locale={locale} />
         </div>
     )
 }

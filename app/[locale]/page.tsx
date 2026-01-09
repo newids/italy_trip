@@ -5,6 +5,8 @@ import { useTranslations } from 'next-intl'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import HamburgerMenu from '@/components/HamburgerMenu'
+import ImportTripButton from '@/components/ImportTripButton'
 
 export default async function Dashboard({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -12,9 +14,7 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
   const t = await getTranslations('Index')
 
   if (!session?.user) {
-    // If not logged in, show landing or redirect
-    // For now, redirect to login
-    redirect('/api/auth/signin') // Or custom login page
+    redirect(`/${locale}/login`)
   }
 
   const trips = await prisma.trip.findMany({
@@ -22,43 +22,77 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
     orderBy: { startDate: 'desc' }
   })
 
+  // Get greeting based on time
+  const hour = new Date().getHours()
+  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'
+
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <header className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">{t('myTrips')}</h1>
-        <div className="flex gap-4">
-          <span className="text-sm text-gray-600 self-center">{session.user.email}</span>
-          <Link href="/api/auth/signout" className="bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-200 transition">
-            {t('signOut')}
-          </Link>
+    <div className="min-h-screen p-6 md:p-12 space-y-12">
+
+      {/* Header / Hero - Add z-index to ensure menu shows over content */}
+      <header className="relative z-50 flex items-center justify-between gap-6 glass-panel p-4 rounded-2xl bg-white border border-gray-200 shadow-sm">
+        <div className="flex items-center gap-4">
+          <HamburgerMenu locale={locale} />
+          <div className="flex items-center gap-2">
+            <span className="text-xl">✈️</span>
+            <p className="text-gray-900 font-bold tracking-tight">TripTimeTable</p>
+          </div>
         </div>
       </header>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {/* Create New Trip Card */}
-        <Link href={`/${locale}/trips/new`} className="group border-2 border-dashed border-gray-300 rounded-2xl flex flex-col items-center justify-center p-8 hover:border-indigo-500 hover:bg-indigo-50 transition cursor-pointer h-48">
-          <div className="text-4xl text-gray-300 group-hover:text-indigo-500 mb-2">+</div>
-          <span className="text-gray-500 font-medium group-hover:text-indigo-600">Create New Trip</span>
-        </Link>
+      {/* Main Content */}
+      <main>
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+            📂 Your Collections
+            <span className="bg-indigo-100 text-indigo-600 text-xs px-2 py-1 rounded-full">{trips.length}</span>
+          </h2>
+          <div className="flex items-center gap-2">
+            <ImportTripButton />
+          </div>
+        </div>
 
-        {trips.map((trip) => (
-          <Link key={trip.id} href={`/${locale}/trips/${trip.id}`} className="block block group">
-            <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all p-6 h-48 border border-gray-100 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-bl-full -mr-10 -mt-10 opacity-50"></div>
-              <h2 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-indigo-600">{trip.title}</h2>
-              <div className="text-sm text-gray-500 mb-4">{trip.subtitle}</div>
-              <div className="flex gap-2 mt-auto">
-                <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">
-                  {new Date(trip.startDate).toLocaleDateString()}
-                </span>
-                {trip.isPublic && (
-                  <span className="bg-green-100 text-green-600 text-xs px-2 py-1 rounded">Public</span>
-                )}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {trips.map((trip) => (
+            <Link key={trip.id} href={`/${locale}/trips/${trip.id}`} className="group relative">
+              <div className="glass-card rounded-xl p-6 h-64 flex flex-col justify-between relative overflow-hidden bg-white hover:border-gray-300 transition-all">
+
+                <div className="relative z-10">
+                  <div className="flex justify-between items-start mb-4">
+                    <span className="text-4xl grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition">🇮🇹</span>
+                    {trip.isPublic && (
+                      <span className="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">
+                        PUBLIC
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 group-hover:text-gray-700 transition-colors line-clamp-1">{trip.title}</h3>
+                  <p className="text-gray-500 text-sm mt-2 line-clamp-2 leading-relaxed">{trip.subtitle || trip.description}</p>
+                </div>
+
+                <div className="relative z-10 flex items-center gap-2 mt-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  <span>
+                    {new Date(trip.startDate).toLocaleDateString(locale, { month: 'short', day: 'numeric' })}
+                    {' — '}
+                    {new Date(trip.endDate).toLocaleDateString(locale, { month: 'short', day: 'numeric' })}
+                  </span>
+                </div>
               </div>
+            </Link>
+          ))}
+
+          {/* Create New Trip Button */}
+          <Link href={`/${locale}/trips/new`} className="group">
+            <div className="h-64 rounded-xl border border-dashed border-gray-300 hover:border-gray-400 hover:bg-gray-50 flex flex-col items-center justify-center gap-3 transition-all duration-300">
+              <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 group-hover:text-gray-600 transition-colors">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
+              </div>
+              <span className="font-medium text-gray-500 group-hover:text-gray-700 text-sm">Create Trip</span>
             </div>
           </Link>
-        ))}
-      </div>
-    </div>
+        </div>
+      </main >
+
+    </div >
   )
 }

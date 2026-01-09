@@ -11,6 +11,16 @@ export default function SlideView({ days, locale }: { days: any[], locale: strin
     const nextSlide = () => setCurrentSlide(prev => (prev + 1) % days.length)
     const prevSlide = () => setCurrentSlide(prev => (prev - 1 + days.length) % days.length)
 
+    if (!days || days.length === 0) {
+        return (
+            <div className="relative w-full h-[300px] bg-gray-100 rounded-3xl overflow-hidden shadow-sm mb-12 flex items-center justify-center text-gray-400">
+                <div className="text-center">
+                    <p>No itinerary days created yet.</p>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="relative w-full h-[500px] bg-gray-900 rounded-3xl overflow-hidden shadow-2xl mb-12">
             {/* Background Image / Gradient */}
@@ -26,7 +36,7 @@ export default function SlideView({ days, locale }: { days: any[], locale: strin
                     <p className="text-lg opacity-90 mb-6">{days[currentSlide].city}</p>
 
                     <div className="space-y-3 text-left bg-white/10 backdrop-blur-md p-6 rounded-2xl max-h-[250px] overflow-y-auto">
-                        {days[currentSlide].activities.map((act: any) => (
+                        {days[currentSlide].activities.slice(0, 3).map((act: any) => (
                             <div key={act.id} className="flex gap-3">
                                 <span className="text-yellow-300">•</span>
                                 <span>{act.description}</span>
