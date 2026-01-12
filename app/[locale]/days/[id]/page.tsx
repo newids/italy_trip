@@ -24,6 +24,10 @@ export default async function DayDetail({ params }: { params: Promise<{ id: stri
         }
     }) as (DayWithDetails & { trip: { id: string } }) | null
 
+    if (!day) {
+        notFound()
+    }
+
     const session = await auth()
 
     // Get Prev/Next Day
@@ -36,13 +40,8 @@ export default async function DayDetail({ params }: { params: Promise<{ id: stri
         select: { id: true }
     })
 
-    // Vars for template
     const prevDayId = prevDay?.id
     const nextDayId = nextDay?.id
-
-    if (!day) {
-        notFound()
-    }
 
     return (
         <div className="min-h-screen bg-[#fff5f5]">

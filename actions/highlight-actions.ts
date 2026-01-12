@@ -2,9 +2,8 @@
 
 import prisma from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
-import { HighlightType } from "@prisma/client"
 
-export async function createHighlight(dayId: string, data: { type: HighlightType, content: string }) {
+export async function createHighlight(dayId: string, data: { type: string, content: string }) {
     try {
         await prisma.highlight.create({
             data: {

@@ -126,7 +126,6 @@ export async function importTrip(jsonStr: string): Promise<{ success?: boolean, 
                 description: data.trip.description || "",
                 startDate: new Date(data.trip.startDate!),
                 endDate: new Date(data.trip.endDate!),
-                destination: data.trip.destination || null,
                 isPublic: false, // Default to private on import
                 features: data.trip.features || "[]"
             }

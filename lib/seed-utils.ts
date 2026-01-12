@@ -119,7 +119,7 @@ export async function seedDefaultTrip(userId: string) {
         }
 
         // Accommodation
-        if ('hotel' in d) {
+        if ('hotel' in d && d.hotel) {
             await prisma.accommodation.create({
                 data: {
                     dayId: day.id,
@@ -130,7 +130,7 @@ export async function seedDefaultTrip(userId: string) {
         }
 
         // Highlight
-        if ('highlight' in d) {
+        if ('highlight' in d && d.highlight) {
             await prisma.highlight.create({
                 data: {
                     dayId: day.id,
