@@ -4,8 +4,12 @@ import prisma from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { Booking } from "@prisma/client"
 
+import { verifyTripAccess, verifyBookingAccess } from "@/lib/auth-utils"
+
 export async function createBooking(tripId: string, data: { type: string, title: string, details: string }) {
     try {
+        await verifyTripAccess(tripId)
+
         await prisma.booking.create({
             data: {
                 tripId,
@@ -23,6 +27,8 @@ export async function createBooking(tripId: string, data: { type: string, title:
 
 export async function updateBooking(id: string, data: Partial<Booking>) {
     try {
+        await verifyBookingAccess(id)
+
         const { id: _, tripId, ...updateData } = data as any
         const updated = await prisma.booking.update({
             where: { id },
@@ -37,6 +43,8 @@ export async function updateBooking(id: string, data: Partial<Booking>) {
 
 export async function deleteBooking(id: string) {
     try {
+        await verifyBookingAccess(id)
+
         const deleted = await prisma.booking.delete({ where: { id } })
         revalidatePath(`/trips/${deleted.tripId}`)
         return { success: true }

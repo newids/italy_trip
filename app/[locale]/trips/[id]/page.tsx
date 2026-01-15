@@ -12,7 +12,13 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import SlideView from '@/app/components/SlideView'
 
+import { auth } from '@/auth'
+import { redirect } from 'next/navigation'
+
+// ... existing imports
+
 async function getTrip(id: string): Promise<TripWithDetails | null> {
+    // ... same implementation
     const trip = await prisma.trip.findUnique({
         where: { id },
         include: {
@@ -34,11 +40,33 @@ async function getTrip(id: string): Promise<TripWithDetails | null> {
 
 export default async function TripDetail({ params }: { params: Promise<{ id: string, locale: string }> }) {
     const { id, locale } = await params;
+    const session = await auth()
     const trip = await getTrip(id)
 
     if (!trip) {
         notFound()
     }
+
+    const isOwner = session?.user?.id === trip.userId
+    const canView = isOwner || trip.isPublic
+
+    if (!canView) {
+        // If logged in, 403 (or redirect). If not logged in, redirect to login.
+        if (!session) {
+            redirect(`/login?callbackUrl=/trips/${id}`)
+        }
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="text-center p-8 bg-white rounded-2xl shadow-xl">
+                    <h1 className="text-2xl font-bold text-gray-900 mb-2">Private Trip</h1>
+                    <p className="text-gray-500">This trip is private and you do not have permission to view it.</p>
+                    <Link href="/" className="btn-primary mt-6 inline-block">Go Home</Link>
+                </div>
+            </div>
+        )
+    }
+
+    const isReadOnly = !isOwner
 
 
     return (

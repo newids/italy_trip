@@ -7,8 +7,13 @@ import { Activity, Day } from "@prisma/client"
 export type ActivityType = 'SIGHTSEEING' | 'MEAL' | 'TRANSPORT' | 'HOTEL' | 'MEMO' | 'OTHER'
 
 // --- Day Actions ---
+import { verifyDayAccess, verifyActivityAccess } from "@/lib/auth-utils"
+
+// --- Day Actions ---
 export async function updateDay(id: string, data: Partial<Day>) {
     try {
+        await verifyDayAccess(id)
+
         const { id: _, tripId: __, ...updateData } = data as any
         const updated = await prisma.day.update({
             where: { id },
@@ -30,6 +35,8 @@ export async function createActivity(dayId: string, data: {
     order: number
 }) {
     try {
+        await verifyDayAccess(dayId)
+
         // Shift existing items if inserting in middle
         await prisma.activity.updateMany({
             where: { dayId, order: { gte: data.order } },
@@ -57,6 +64,8 @@ export async function createActivity(dayId: string, data: {
 
 export async function updateActivity(id: string, data: Partial<Activity>) {
     try {
+        await verifyActivityAccess(id)
+
         const { id: _, dayId: __, ...updateData } = data as any // Prevent ID updates
 
         const updated = await prisma.activity.update({
@@ -72,6 +81,8 @@ export async function updateActivity(id: string, data: Partial<Activity>) {
 
 export async function deleteActivity(id: string) {
     try {
+        await verifyActivityAccess(id)
+
         const deleted = await prisma.activity.delete({
             where: { id }
         })

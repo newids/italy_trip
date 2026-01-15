@@ -3,8 +3,12 @@
 import prisma from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 
+import { verifyDayAccess, verifyHighlightAccess } from "@/lib/auth-utils"
+
 export async function createHighlight(dayId: string, data: { type: string, content: string }) {
     try {
+        await verifyDayAccess(dayId)
+
         await prisma.highlight.create({
             data: {
                 dayId,
@@ -21,6 +25,8 @@ export async function createHighlight(dayId: string, data: { type: string, conte
 
 export async function updateHighlight(id: string, content: string) {
     try {
+        await verifyHighlightAccess(id)
+
         await prisma.highlight.update({
             where: { id },
             data: { content }
@@ -34,6 +40,8 @@ export async function updateHighlight(id: string, content: string) {
 
 export async function deleteHighlight(id: string) {
     try {
+        await verifyHighlightAccess(id)
+
         await prisma.highlight.delete({ where: { id } })
         revalidatePath('/days/[id]')
         return { success: true }

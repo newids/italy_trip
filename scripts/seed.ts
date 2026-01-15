@@ -4,6 +4,7 @@ import * as cheerio from 'cheerio'
 import * as fs from 'fs'
 import * as path from 'path'
 import 'dotenv/config'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
@@ -15,18 +16,23 @@ async function main() {
       .trim()
   }
 
+  // ...
+
   // 1. Create Default User
   const userEmail = 'newid@example.com'
-  // Use a placeholder password hash or mechanism. For now, we seed a user.
-  // In real auth, this would be hashed.
-  // We'll use a hardcoded user for the "Demo" trip.
+  const seedPassword = process.env.SEED_USER_PASSWORD || '1234';
+  const hashedPassword = await bcrypt.hash(seedPassword, 10)
+
   const user = await prisma.user.upsert({
     where: { email: userEmail },
-    update: {},
+    update: {
+      password: hashedPassword
+    },
     create: {
       email: userEmail,
       name: 'Power P User',
-      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=PowerP'
+      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=PowerP',
+      password: hashedPassword
     }
   })
   console.log(`Created/Found user: ${user.email}`)

@@ -5,11 +5,13 @@ import { revalidatePath } from "next/cache"
 import { auth } from "@/auth"
 
 // --- Update ---
-export async function updateTrip(tripId: string, data: { description?: string, title?: string, subtitle?: string, icon?: string, startDate?: Date, endDate?: Date }) {
-    const session = await auth()
-    if (!session?.user) return { error: "Unauthorized" }
+// --- Update ---
+import { verifyTripAccess, verifyAuth } from "@/lib/auth-utils"
 
+export async function updateTrip(tripId: string, data: { description?: string, title?: string, subtitle?: string, icon?: string, startDate?: Date, endDate?: Date }) {
     try {
+        await verifyTripAccess(tripId)
+
         await prisma.trip.update({
             where: { id: tripId },
             data: {
@@ -19,7 +21,7 @@ export async function updateTrip(tripId: string, data: { description?: string, t
         revalidatePath(`/trips/${tripId}`)
         return { success: true }
     } catch (e) {
-        return { error: "Failed to update trip" }
+        return { error: (e as Error).message || "Failed to update trip" }
     }
 }
 
@@ -67,5 +69,45 @@ export async function createNewTrip(data: { title: string, days: number }) {
     } catch (e) {
         console.error(e)
         return { error: "Failed to create trip" }
+    }
+}
+
+// --- Community ---
+
+export async function toggleTripVisibility(tripId: string) {
+    try {
+        const { trip } = await verifyTripAccess(tripId)
+
+        const updated = await prisma.trip.update({
+            where: { id: tripId },
+            data: { isPublic: !trip.isPublic }
+        })
+
+        revalidatePath(`/trips/${tripId}`)
+        revalidatePath('/community')
+        return { success: true, isPublic: updated.isPublic }
+    } catch (e) {
+        return { error: "Failed to toggle visibility" }
+    }
+}
+
+export async function getPublicTrips() {
+    try {
+        const trips = await prisma.trip.findMany({
+            where: { isPublic: true },
+            orderBy: { updatedAt: 'desc' },
+            take: 20,
+            include: {
+                user: {
+                    select: { name: true, image: true }
+                },
+                _count: {
+                    select: { days: true }
+                }
+            }
+        })
+        return { data: trips }
+    } catch (e) {
+        return { error: "Failed to fetch public trips" }
     }
 }

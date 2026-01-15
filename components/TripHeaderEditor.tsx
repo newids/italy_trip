@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { updateTrip } from '@/actions/trip-actions'
+import { updateTrip, toggleTripVisibility } from '@/actions/trip-actions'
 import { format } from 'date-fns'
 import { Trip } from '@prisma/client'
 
@@ -15,6 +15,18 @@ export default function TripHeaderEditor({ trip }: { trip: Trip }) {
     const [icon, setIcon] = useState(trip.icon || '🇮🇹')
     const [startDate, setStartDate] = useState(format(new Date(trip.startDate), 'yyyy-MM-dd'))
     const [endDate, setEndDate] = useState(format(new Date(trip.endDate), 'yyyy-MM-dd'))
+
+    // Community
+    const [isPublic, setIsPublic] = useState(trip.isPublic)
+
+    const handleToggleVisibility = () => {
+        startTransition(async () => {
+            const res = await toggleTripVisibility(trip.id)
+            if (res.success && res.isPublic !== undefined) {
+                setIsPublic(res.isPublic)
+            }
+        })
+    }
 
     const handleSave = () => {
         startTransition(async () => {
@@ -65,6 +77,19 @@ export default function TripHeaderEditor({ trip }: { trip: Trip }) {
                     </div>
                 </div>
 
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200">
+                    <div className="flex flex-col">
+                        <span className="font-bold text-gray-900">Public Visibility</span>
+                        <span className="text-xs text-gray-500">Allow others to see this trip in Community</span>
+                    </div>
+                    <button
+                        onClick={handleToggleVisibility}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isPublic ? 'bg-indigo-600' : 'bg-gray-200'}`}
+                    >
+                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isPublic ? 'translate-x-6' : 'translate-x-1'}`} />
+                    </button>
+                </div>
+
                 <div className="flex justify-end gap-2 pt-4 border-t border-gray-100">
                     <button onClick={() => setIsEditing(false)} className="btn-ghost">Cancel</button>
                     <button onClick={handleSave} className="btn-primary" disabled={isPending}>
@@ -92,6 +117,11 @@ export default function TripHeaderEditor({ trip }: { trip: Trip }) {
             <p className="text-lg text-gray-500 font-medium min-h-[1.5em]">{trip.subtitle}</p>
 
             <div className="flex items-center justify-center gap-3 mt-4 text-sm text-gray-500">
+                {isPublic && (
+                    <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full border border-indigo-200 font-bold text-xs uppercase tracking-wider">
+                        Public
+                    </span>
+                )}
                 <span className="bg-gray-100 px-3 py-1 rounded-full border border-gray-200 font-mono text-xs">
                     {format(new Date(trip.startDate), 'yyyy.MM.dd')} - {format(new Date(trip.endDate), 'MM.dd')}
                 </span>

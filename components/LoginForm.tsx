@@ -35,11 +35,8 @@ export default function LoginForm({ ownerStatus, locale }: { ownerStatus: OwnerS
             if (result.exists) {
                 setView('PASSWORD')
             } else {
-                if (ownerStatus.exists) {
-                    setError("Account not found. This app is managed by a single owner.")
-                } else {
-                    setView('SIGNUP')
-                }
+                // Allow anyone to signup
+                setView('SIGNUP')
             }
         })
     }
@@ -108,6 +105,20 @@ export default function LoginForm({ ownerStatus, locale }: { ownerStatus: OwnerS
                         </div>
                     </div>
 
+                    <button
+                        type="button"
+                        onClick={() => signIn("google")}
+                        className="w-full flex items-center justify-center gap-2 py-3 border border-gray-300 rounded-xl text-gray-700 font-medium hover:bg-gray-50 transition"
+                    >
+                        <span className="text-xl">🇬</span> Sign in with Google
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => signIn("github")}
+                        className="w-full flex items-center justify-center gap-2 py-3 border border-gray-300 rounded-xl text-gray-700 font-medium hover:bg-gray-50 transition"
+                    >
+                        <span className="text-xl">🐙</span> Sign in with GitHub
+                    </button>
                     <button
                         type="button"
                         onClick={() => signIn("passkey")}

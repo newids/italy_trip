@@ -7,10 +7,13 @@
     "build": "prisma db push && next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "npx ts-node -O '{\"module\":\"commonjs\",\"esModuleInterop\":true}' scripts/seed.ts",
-    "backup": "npx ts-node -O '{\"module\":\"commonjs\",\"esModuleInterop\":true}' scripts/backup.ts",
-    "cloud-backup": "npx ts-node -O '{\"module\":\"commonjs\",\"esModuleInterop\":true}' scripts/cloud-backup.ts",
-    "cloud-restore": "npx ts-node -O '{\"module\":\"commonjs\",\"esModuleInterop\":true}' scripts/cloud-restore.ts"
+    "seed": "npx ts-node -O \"{\\\"module\\\":\\\"commonjs\\\"}\" scripts/seed.ts",
+    "backup": "npx ts-node -O \"{\\\"module\\\":\\\"commonjs\\\"}\" scripts/backup.ts",
+    "cloud-backup": "npx ts-node -O \"{\\\"module\\\":\\\"commonjs\\\"}\" scripts/cloud-backup.ts",
+    "cloud-restore": "npx ts-node -O \"{\\\"module\\\":\\\"commonjs\\\"}\" scripts/cloud-restore.ts",
+    "db:up": "docker-compose up -d",
+    "db:down": "docker-compose down",
+    "test": "vitest"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
@@ -29,18 +32,23 @@
     "@aws-sdk/client-s3": "^3.958.0",
     "@prisma/client": "^5.22.0",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.3.1",
     "@types/bcryptjs": "^2.4.6",
     "@types/cheerio": "^0.22.35",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^5.1.2",
     "cheerio": "^1.1.2",
     "dotenv": "^17.2.3",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
+    "jsdom": "^27.4.0",
     "prisma": "^5.22.0",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.0.17"
   }
 }

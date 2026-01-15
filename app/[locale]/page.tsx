@@ -8,13 +8,15 @@ import { redirect } from 'next/navigation'
 import HamburgerMenu from '@/components/HamburgerMenu'
 import ImportTripButton from '@/components/ImportTripButton'
 
+import LandingPage from '@/components/LandingPage'
+
 export default async function Dashboard({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const session = await auth()
   const t = await getTranslations('Index')
 
   if (!session?.user) {
-    redirect(`/${locale}/login`)
+    return <LandingPage locale={locale} />
   }
 
   const trips = await prisma.trip.findMany({
@@ -38,6 +40,10 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
             <p className="text-gray-900 font-bold tracking-tight">TripTimeTable</p>
           </div>
         </div>
+
+        <Link href={`/${locale}/community`} className="text-sm font-medium text-indigo-600 hover:text-indigo-800 flex items-center gap-1 bg-indigo-50 px-3 py-1.5 rounded-full transition-colors border border-indigo-100">
+          <span>🌍</span> Community
+        </Link>
       </header>
 
       {/* Main Content */}

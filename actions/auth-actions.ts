@@ -39,10 +39,10 @@ export async function createOwner(prevState: any, formData: FormData) {
     }
 
     // Double check constraint
-    const count = await prisma.user.count()
-    if (count > 0) {
-        return { error: "Owner account already exists." }
-    }
+    // const count = await prisma.user.count()
+    // if (count > 0) {
+    //    return { error: "Owner account already exists." }
+    // }
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10)
