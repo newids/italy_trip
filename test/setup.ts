@@ -66,6 +66,6 @@ vi.mock('@/lib/prisma', () => ({
             findUnique: vi.fn(),
             count: vi.fn(),
         },
-        $transaction: vi.fn((callback) => callback(vi.mocked('@/lib/prisma').default)),
+        $transaction: vi.fn((callback) => callback({} as any)),
     }
 }))
