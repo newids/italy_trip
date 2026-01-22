@@ -1,6 +1,6 @@
+'use server'
 
-import { getOwnerStatus } from '@/actions/auth-actions'
-import LoginForm from '@/components/LoginForm'
+import SignInForm from '@/components/auth/SignInForm'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
@@ -14,13 +14,10 @@ export default async function LoginPage({ params }: { params: Promise<{ locale: 
         redirect(`/${locale}`)
     }
 
-    // Fetch initial status
-    const ownerStatus = await getOwnerStatus()
-
     return (
-        <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50/50">
             <LanguageSwitcher fixed />
-            <LoginForm ownerStatus={ownerStatus} locale={locale} />
+            <SignInForm locale={locale} />
         </div>
     )
 }

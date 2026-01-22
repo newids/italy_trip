@@ -25,6 +25,23 @@ export async function updateEmail(newEmail: string) {
     }
 }
 
+export async function updateName(newName: string) {
+    const session = await auth()
+    if (!session?.user?.email) return { error: "Not authenticated" }
+
+    if (!newName || newName.trim().length === 0) return { error: "Invalid name" }
+
+    try {
+        await prisma.user.update({
+            where: { email: session.user.email },
+            data: { name: newName }
+        })
+        return { success: "Name updated" }
+    } catch (e) {
+        return { error: "Failed to update name" }
+    }
+}
+
 export async function deleteAccount() {
     const session = await auth()
     if (!session?.user?.email) return { error: "Not authenticated" }

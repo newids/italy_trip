@@ -13,7 +13,7 @@ describe('verifyTripAccess', () => {
     })
 
     it('should throw AuthError if user is not logged in', async () => {
-        mockAuth.mockResolvedValue(null)
+        mockAuth.mockResolvedValue(null as any)
 
         await expect(verifyTripAccess('trip-123'))
             .rejects.toThrow("You must be logged in.")
