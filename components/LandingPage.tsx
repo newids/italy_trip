@@ -21,7 +21,7 @@ export default function LandingPage({ locale }: { locale: string }) {
                             Sign In
                         </Link>
                         <Link
-                            href={`/${locale}/login`}
+                            href={`/${locale}/signup`}
                             className="px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-full hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200"
                         >
                             Get Started
@@ -44,7 +44,7 @@ export default function LandingPage({ locale }: { locale: string }) {
                         </p>
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                             <Link
-                                href={`/${locale}/login`}
+                                href={`/${locale}/signup`}
                                 className="w-full sm:w-auto px-8 py-4 text-lg font-bold text-white bg-gray-900 rounded-2xl hover:bg-gray-800 transition-all hover:scale-105 active:scale-95"
                             >
                                 Start First Trip
