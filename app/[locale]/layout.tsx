@@ -17,17 +17,7 @@ export default async function LocaleLayout({
   const { locale } = await params;
   const messages = await getMessages();
 
-  // First-Run Check
-  const headerList = await headers();
-  const pathname = headerList.get('x-pathname') || '';
 
-  // Prevent infinite redirect loop
-  if (!pathname.includes('/login')) {
-    const userCount = await prisma.user.count();
-    if (userCount === 0) {
-      redirect(`/${locale}/login`);
-    }
-  }
 
   return (
     <html lang={locale} suppressHydrationWarning>
