@@ -5,7 +5,10 @@ import prisma from "@/lib/prisma"
 import { authConfig } from "./auth.config"
 
 import Google from "next-auth/providers/google"
-import GitHub from "next-auth/providers/github"
+import Facebook from "next-auth/providers/facebook"
+import Twitter from "next-auth/providers/twitter"
+import Kakao from "next-auth/providers/kakao"
+import Naver from "next-auth/providers/naver"
 import Passkey from "next-auth/providers/passkey"
 import bcrypt from "bcryptjs"
 
@@ -15,7 +18,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     adapter: PrismaAdapter(prisma),
     providers: [
         Google,
-        GitHub,
+        Facebook,
+        Twitter,
+        Kakao,
+        Naver,
         Passkey({
             formFields: {
                 email: { label: "Email", type: "email", required: true, autocomplete: "webauthn" },

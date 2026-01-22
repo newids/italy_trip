@@ -14,10 +14,18 @@ export default function LanguageSwitcher({ fixed = true, className = "" }: { fix
     const onSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
         const nextLocale = e.target.value
         startTransition(() => {
-            // Replace the locale in the pathname
-            // Assuming pathname starts with /en or /ko
-            const newPath = pathname.replace(`/${locale}`, `/${nextLocale}`)
-            router.replace(newPath)
+            // Split path into segments
+            const segments = pathname.split('/')
+            // Replace the second segment (index 1) which is the locale
+            // Path structure: '' / 'en' / 'dashboard'
+            if (segments.length > 1) {
+                segments[1] = nextLocale
+                const newPath = segments.join('/')
+                router.replace(newPath)
+            } else {
+                // Fallback if path is weird, though middleware enforces locale
+                router.replace(`/${nextLocale}`)
+            }
         })
     }
 
