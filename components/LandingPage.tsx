@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Button from '@/components/ui/Button'
 
 export default function LandingPage({ locale }: { locale: string }) {
     return (
@@ -14,17 +15,15 @@ export default function LandingPage({ locale }: { locale: string }) {
                         </span>
                     </div>
                     <div className="flex items-center gap-4">
-                        <Link
-                            href={`/${locale}/login`}
-                            className="px-5 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
-                        >
-                            Sign In
+                        <Link href={`/${locale}/login`}>
+                            <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
+                                Sign In
+                            </Button>
                         </Link>
-                        <Link
-                            href={`/${locale}/signup`}
-                            className="px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-full hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200"
-                        >
-                            Get Started
+                        <Link href={`/${locale}/signup`}>
+                            <Button variant="primary" className="rounded-full px-6">
+                                Get Started
+                            </Button>
                         </Link>
                     </div>
                 </div>
@@ -43,17 +42,15 @@ export default function LandingPage({ locale }: { locale: string }) {
                             Share with friends and discover community trips.
                         </p>
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                            <Link
-                                href={`/${locale}/signup`}
-                                className="w-full sm:w-auto px-8 py-4 text-lg font-bold text-white bg-gray-900 rounded-2xl hover:bg-gray-800 transition-all hover:scale-105 active:scale-95"
-                            >
-                                Start First Trip
+                            <Link href={`/${locale}/signup`}>
+                                <Button variant="secondary" className="w-full sm:w-auto px-8 py-4 text-lg rounded-2xl">
+                                    Start First Trip
+                                </Button>
                             </Link>
-                            <Link
-                                href={`/${locale}/community`}
-                                className="w-full sm:w-auto px-8 py-4 text-lg font-bold text-gray-700 bg-gray-100 rounded-2xl hover:bg-gray-200 transition-all"
-                            >
-                                Explorer Community
+                            <Link href={`/${locale}/community`}>
+                                <Button variant="outline" className="w-full sm:w-auto px-8 py-4 text-lg rounded-2xl bg-gray-100 border-transparent hover:bg-gray-200 text-gray-700">
+                                    Explorer Community
+                                </Button>
                             </Link>
                         </div>
                     </div>

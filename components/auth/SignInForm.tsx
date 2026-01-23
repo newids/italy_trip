@@ -5,6 +5,7 @@ import { signIn } from 'next-auth/webauthn'
 import { loginAction } from '@/actions/auth-actions'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Button from '@/components/ui/Button'
 
 export default function SignInForm({ locale }: { locale: string }) {
     const [email, setEmail] = useState('')
@@ -61,12 +62,13 @@ export default function SignInForm({ locale }: { locale: string }) {
                     </div>
                 </div>
 
-                <button
+                <Button
                     disabled={isPending}
-                    className="w-full bg-indigo-600 text-white py-2.5 rounded-xl font-medium hover:bg-indigo-700 transition disabled:opacity-50"
+                    variant="primary"
+                    className="w-full"
                 >
                     {isPending ? 'Signing in...' : 'Sign In'}
-                </button>
+                </Button>
             </form>
 
             <div className="relative my-6">
@@ -75,24 +77,24 @@ export default function SignInForm({ locale }: { locale: string }) {
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-                <button onClick={() => signIn("google")} className="flex items-center justify-center gap-2 py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition bg-white text-gray-700 font-medium text-sm">
+                <Button type="button" variant="social" onClick={() => signIn("google")} className="border-gray-200 bg-white text-gray-700 hover:bg-gray-50">
                     <span>🇬</span> Google
-                </button>
-                <button onClick={() => signIn("facebook")} className="flex items-center justify-center gap-2 py-2.5 border border-blue-600 bg-blue-600 rounded-xl hover:bg-blue-700 transition text-white font-medium text-sm">
+                </Button>
+                <Button type="button" variant="social" onClick={() => signIn("facebook")} className="border-blue-600 bg-blue-600 text-white hover:bg-blue-700">
                     <span>🇫</span> Facebook
-                </button>
-                <button onClick={() => signIn("twitter")} className="flex items-center justify-center gap-2 py-2.5 border border-black bg-black rounded-xl hover:bg-gray-800 transition text-white font-medium text-sm">
+                </Button>
+                <Button type="button" variant="social" onClick={() => signIn("twitter")} className="border-black bg-black text-white hover:bg-gray-800">
                     <span>𝕏</span> X
-                </button>
-                <button onClick={() => signIn("kakao")} className="flex items-center justify-center gap-2 py-2.5 border border-[#FEE500] bg-[#FEE500] rounded-xl hover:bg-[#FDD835] transition text-[#371D1E] font-medium text-sm">
+                </Button>
+                <Button type="button" variant="social" onClick={() => signIn("kakao")} className="border-[#FEE500] bg-[#FEE500] text-[#371D1E] hover:bg-[#FDD835]">
                     <span>🇰</span> Kakao
-                </button>
-                <button onClick={() => signIn("naver")} className="flex items-center justify-center gap-2 py-2.5 border border-[#03C75A] bg-[#03C75A] rounded-xl hover:bg-[#02b351] transition text-white font-medium text-sm">
+                </Button>
+                <Button type="button" variant="social" onClick={() => signIn("naver")} className="border-[#03C75A] bg-[#03C75A] text-white hover:bg-[#02b351]">
                     <span>🇳</span> Naver
-                </button>
-                <button onClick={() => signIn("passkey")} className="flex items-center justify-center gap-2 py-2.5 border border-gray-200 bg-white rounded-xl hover:bg-gray-50 transition text-gray-700 font-medium text-sm">
+                </Button>
+                <Button type="button" variant="social" onClick={() => signIn("passkey")} className="border-gray-200 bg-white text-gray-700 hover:bg-gray-50">
                     <span>🔑</span> Passkey
-                </button>
+                </Button>
             </div>
 
             <div className="mt-8 text-center text-sm">
